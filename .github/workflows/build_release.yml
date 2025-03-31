@@ -49,11 +49,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install cross
-        run: cargo install cross --git https://github.com/cross-rs/cross
+      - name: Install cargo-zigbuild
+        run: cargo install cargo-zigbuild
 
-      - name: Build for macOS
-        run: cross build --target x86_64-apple-darwin --release
+      - name: Build for macOS using Zig
+        run: cargo zigbuild --target x86_64-apple-darwin --release
 
       - name: Archive Binary
         run: |
