@@ -49,6 +49,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Zig
+        run: |
+          wget https://ziglang.org/download/0.11.0/zig-linux-x86_64-0.11.0.tar.xz
+          tar -xf zig-linux-x86_64-0.11.0.tar.xz
+          echo "$(pwd)/zig-linux-x86_64-0.11.0" >> $GITHUB_PATH
+
       - name: Install cargo-zigbuild
         run: cargo install cargo-zigbuild
 
