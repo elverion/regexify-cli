@@ -1,8 +1,8 @@
-use std::collections::HashMap;
 use clap::Parser;
+use rand::prelude::IteratorRandom;
 use rand::Rng;
 use regex::Regex;
-use rand::prelude::IteratorRandom;
+use std::collections::HashMap;
 
 /// Output a pseudo-random string conforming to the regex-like input pattern
 #[derive(Parser, Debug)]
@@ -26,13 +26,16 @@ fn process_pattern(pattern: &str) -> String {
 
     // Define common token mappings
     let token_map: HashMap<&str, &str> = [
-        ("\\d", "0123456789"),   // Digits
-        ("\\s", " \t\n\r"), // Whitespace characters
-        ("\\w", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"), // Word characters
+        ("\\d", "0123456789"), // Digits
+        ("\\s", " \t\n\r"),    // Whitespace characters
+        (
+            "\\w",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_",
+        ), // Word characters
     ]
-        .iter()
-        .cloned()
-        .collect();
+    .iter()
+    .cloned()
+    .collect();
 
     // Process alternatives first
     let mut pattern_with_alts = String::new();
@@ -123,7 +126,6 @@ fn process_pattern(pattern: &str) -> String {
     result
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -137,7 +139,15 @@ mod tests {
         assert!(out.chars().all(|c| c.is_whitespace()));
 
         let out = process_pattern("[\\w]{10}");
-        assert!(out.chars().all(|c| matches!(c, 'a'..='z' | 'A' ..='Z' | '0'..='9' | '_')));
+        assert!(out
+            .chars()
+            .all(|c| matches!(c, 'a'..='z' | 'A' ..='Z' | '0'..='9' | '_')));
+    }
+
+    #[test]
+    fn test_process_pattern_handles_many_sets() {
+        let out = process_pattern("[a]{1}[b]{2}[c]{1}[d][e][f][g][h][i][j][k][l][m][n][o][p]{1}[q]{2}[r]{3}[s-s][t][u][v][w][x][y][z]");
+        assert_eq!(out.to_string(), "abbcdefghijklmnopqqrrrstuvwxyz");
     }
 
     #[test]
@@ -177,8 +187,14 @@ mod tests {
     fn test_process_pattern_handles_multiple_captures() {
         let out = process_pattern("[a-z]{2}[0-9]{3}");
         assert_eq!(out.len(), 5);
-        assert!(out.chars().take(2).all(|c| c.is_ascii_lowercase()), "First two chars should be a-z");
-        assert!(out.chars().skip(2).all(|c| c.is_ascii_digit()), "Last three chars should be 0-9");
+        assert!(
+            out.chars().take(2).all(|c| c.is_ascii_lowercase()),
+            "First two chars should be a-z"
+        );
+        assert!(
+            out.chars().skip(2).all(|c| c.is_ascii_digit()),
+            "Last three chars should be 0-9"
+        );
     }
 
     #[test]
