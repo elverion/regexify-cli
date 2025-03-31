@@ -49,6 +49,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin
+
       - name: Install Zig
         run: |
           wget https://ziglang.org/download/0.11.0/zig-linux-x86_64-0.11.0.tar.xz
